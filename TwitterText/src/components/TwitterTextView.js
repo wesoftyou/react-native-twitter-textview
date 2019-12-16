@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 import {
   Linking,
@@ -23,9 +23,6 @@ const styles = StyleSheet
   );
 
 const sanitize = (str = '', extractHashtags = true, extractMentions = true) => str
-  .replace(/#/g, extractHashtags ? ' #' : '#')
-  .replace(/@/g, extractMentions ? ' @' : '@')
-  .replace(/\s\s+/g, ' ');
 
 const TwitterTextView = ({
   children = '',
@@ -38,6 +35,7 @@ const TwitterTextView = ({
   extractLinks,
   onPressLink,
   linkStyle,
+  propStyle,
   ...extraProps
 }) => {
   return (
@@ -49,29 +47,51 @@ const TwitterTextView = ({
         extractHashtags,
         extractMentions,
       )
-        .split(' ')
+        .split(/(\s+)/) // split string by any whitespace
         .map(
           (word, i) => {
-            const pfx = (i > 0) ? ' ' : '';
             if (extractLinks && isHyperlink(word)) {
               return (
                 <Text
+                  key={word + i}
                   onPress={e => onPressLink(e, word)}
                   style={linkStyle}
                 >
-                  {`${pfx}${word}`}
+                  {word}
                 </Text>
               );
             }
+            if ( /\?\w+/g.test(word)) {
+              const [ prop ] = word.match(/\?\w+/g) || []
+              if (prop) {
+                const after = `${word.substring(prop.length + 1)}`;
+                return (
+                  <Text
+                    key={word + i}
+                  >
+                    <Text
+                      style={propStyle}
+                    >
+                      {prop}
+                    </Text>
+                    <Text
+                    >
+                      {`${after}`}
+                    </Text>
+                  </Text>
+                );
+              }
+            }
             if (extractHashtags) {
               const [ hashtag ] = shouldExtractHashtags(
-                word,
+                word
               ) || [];
               if (hashtag) {
-                const result = `${pfx}#${hashtag}`;
+                const result = `#${hashtag}`;
                 const after = `${word.substring(hashtag.length + 1)}`;
                 return (
                   <Text
+                    key={word + i}
                   >
                     <Text
                       onPress={e => onPressHashtag(e, hashtag)}
@@ -89,13 +109,14 @@ const TwitterTextView = ({
             }
             if (extractMentions) {
               const [ mention ] = shouldExtractMentions(
-                word,
+                word
               ) || [];
               if (mention) {
-                const result = `${pfx}@${mention}`;
+                const result = `@${mention}`;
                 const after = `${word.substring(mention.length + 1)}`;
                 return (
                   <Text
+                    key={word + i}
                   >
                     <Text
                       onPress={e => onPressMention(e, mention)}
@@ -113,8 +134,9 @@ const TwitterTextView = ({
             }
             return (
               <Text
+                key={word + i}
               >
-                {`${pfx}${word}`}
+                {word}
               </Text>
             );
           },
@@ -134,6 +156,7 @@ TwitterTextView.propTypes = {
   extractLinks: PropTypes.bool,
   onPressLink: PropTypes.func,
   linkStyle: PropTypes.shape({}),
+  propStyle: PropTypes.shape({}),
 };
 
 TwitterTextView.defaultProps = {
@@ -158,10 +181,11 @@ TwitterTextView.defaultProps = {
     }
   },
   mentionStyle: styles.linkStyle,
+  propStyle: styles.linkStyle,
   extractLinks: true,
   onPressLink: (e, url) => Linking.canOpenURL(url)
     .then(canOpen => (!!canOpen) && Linking.openURL(url)),
   linkStyle: styles.linkStyle,
 };
 
-export default TwitterTextView;
+export default memo(TwitterTextView);
