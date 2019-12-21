@@ -158,7 +158,7 @@ TwitterTextView.propTypes = {
   onPressLink: PropTypes.func,
   linkStyle: PropTypes.shape({}),
   propStyle: PropTypes.shape({}),
-  onPropPress: PropTypes.func
+  onPressProp: PropTypes.func
 };
 
 TwitterTextView.defaultProps = {
