@@ -70,6 +70,7 @@ const TwitterTextView = ({
                     key={word + i}
                   >
                     <Text
+                      onPress={e => onPressProp(e, prop)}
                       style={propStyle}
                     >
                       {prop}
@@ -94,7 +95,7 @@ const TwitterTextView = ({
                     key={word + i}
                   >
                     <Text
-                      onPress={e => onPressHashtag(e, hashtag)}
+                      onPress={e => onPressHashtag(e, result)}
                       style={hashtagStyle}
                     >
                       {`${result}`}
@@ -119,7 +120,7 @@ const TwitterTextView = ({
                     key={word + i}
                   >
                     <Text
-                      onPress={e => onPressMention(e, mention)}
+                      onPress={e => onPressMention(e, result)}
                       style={mentionStyle}
                     >
                       {`${result}`}
@@ -157,6 +158,7 @@ TwitterTextView.propTypes = {
   onPressLink: PropTypes.func,
   linkStyle: PropTypes.shape({}),
   propStyle: PropTypes.shape({}),
+  onPropPress: PropTypes.func
 };
 
 TwitterTextView.defaultProps = {
@@ -182,6 +184,14 @@ TwitterTextView.defaultProps = {
   },
   mentionStyle: styles.linkStyle,
   propStyle: styles.linkStyle,
+  onPressProp: (e, prop) => {
+    const msg = `Prop: "${prop}"`;
+    if (Platform.OS !== 'web') {
+      Alert.alert(msg);
+    } else {
+      console.log(msg);
+    }
+  },
   extractLinks: true,
   onPressLink: (e, url) => Linking.canOpenURL(url)
     .then(canOpen => (!!canOpen) && Linking.openURL(url)),
