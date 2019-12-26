@@ -62,7 +62,7 @@ const TwitterTextView = ({
                 </Text>
               );
             }
-            if ( /\?\w+/g.test(word)) {
+            if (/^\?\w+$/g.test(word)) {
               const [ prop ] = word.match(/\?\w+/g) || []
               if (prop) {
                 const after = `${word.substring(prop.length + 1)}`;
