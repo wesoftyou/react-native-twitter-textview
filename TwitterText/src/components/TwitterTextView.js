@@ -5,7 +5,7 @@ import {
   Platform,
   Text,
   StyleSheet,
-  Alert,
+  Alert
 } from 'react-native';
 import {
   extractHashtags as shouldExtractHashtags,
@@ -62,7 +62,7 @@ const TwitterTextView = ({
                 </Text>
               );
             }
-            if (/^\?\w+$/g.test(word)) {
+            if (~word.search(/^\?\w+$/g)) {
               const [ prop ] = word.match(/\?\w+/g) || []
               if (prop) {
                 const after = `${word.substring(prop.length + 1)}`;
@@ -71,7 +71,7 @@ const TwitterTextView = ({
                     key={word + i}
                   >
                     <Text
-                      onPress={e => onPressProp(e, prop)}
+                      onPress={e => onPressProp(e, prop, i)}
                       style={propStyle}
                     >
                       {prop}
@@ -113,7 +113,7 @@ const TwitterTextView = ({
               const [ mention ] = shouldExtractMentions(
                 word
               ) || [];
-              if (mention) {
+              if (mention && word.startsWith('@')) {
                 const result = `@${mention}`;
                 const after = `${word.substring(mention.length + 1)}`;
                 return (
@@ -121,7 +121,7 @@ const TwitterTextView = ({
                     key={word + i}
                   >
                     <Text
-                      onPress={e => onPressMention(e, result)}
+                      onPress={e => onPressMention(e, result, i)}
                       style={mentionStyle}
                     >
                       {`${result}`}
