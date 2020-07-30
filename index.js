@@ -1,3 +1,3 @@
-import TwitterTextView from './TwitterText/src/components/TwitterTextView';
+import TwitterTextView from './src/TwitterTextView';
 
 export default TwitterTextView;
