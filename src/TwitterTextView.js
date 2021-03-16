@@ -140,7 +140,7 @@ const TwitterTextView = ({
               return (
                 <Text
                   key={word + i}
-                  style={{ fontFamily: "System" }}
+                  style={{ fontFamily: "System", fontSize: Platform.OS === 'android' ? null : (extraProps.style?.fontSize || 17) - 1.5 }}
                 >
                   {word}
                 </Text>
